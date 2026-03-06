@@ -1,4 +1,5 @@
 import { MapPin, Clock, DollarSign, Bookmark, Flame } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { Job } from '../types/database';
 
 function formatPay(job: Job): string {
@@ -39,15 +40,24 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(diffDays / 7)}w ago`;
 }
 
-export default function JobCard({ job }: { job: Job }) {
+interface JobCardProps {
+  job: Job;
+  isSaved?: boolean;
+  onToggleSave?: (jobId: string) => void;
+}
+
+export default function JobCard({ job, isSaved, onToggleSave }: JobCardProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-orange/30 transition-all group">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="text-lg font-bold text-navy group-hover:text-orange transition-colors truncate">
+            <Link
+              to={`/jobs/${job.id}`}
+              className="text-lg font-bold text-navy group-hover:text-orange transition-colors truncate no-underline"
+            >
               {job.title}
-            </h3>
+            </Link>
             {job.is_urgently_hiring && (
               <span className="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full">
                 <Flame className="w-3 h-3" />
@@ -60,10 +70,13 @@ export default function JobCard({ job }: { job: Job }) {
           </p>
         </div>
         <button
-          className="text-gray-300 hover:text-orange transition-colors shrink-0 bg-transparent border-none cursor-pointer p-1"
-          aria-label="Save job"
+          onClick={() => onToggleSave?.(job.id)}
+          className={`transition-colors shrink-0 bg-transparent border-none cursor-pointer p-1 ${
+            isSaved ? 'text-orange' : 'text-gray-300 hover:text-orange'
+          }`}
+          aria-label={isSaved ? 'Unsave job' : 'Save job'}
         >
-          <Bookmark className="w-5 h-5" />
+          <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-orange' : ''}`} />
         </button>
       </div>
 
@@ -109,9 +122,12 @@ export default function JobCard({ job }: { job: Job }) {
 
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
         <span className="text-xs text-gray-400">{timeAgo(job.created_at)}</span>
-        <button className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer border-none">
+        <Link
+          to={`/jobs/${job.id}`}
+          className="bg-orange hover:bg-orange-dark text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition-colors no-underline"
+        >
           Apply Now
-        </button>
+        </Link>
       </div>
     </div>
   );
