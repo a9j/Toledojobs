@@ -1,59 +1,26 @@
-const API_URL = 'https://api.anthropic.com/v1/messages';
-const MODEL = 'claude-sonnet-4-5-20250929';
-const MAX_TOKENS = 1024;
-
-function getApiKey(): string {
-  return import.meta.env.VITE_ANTHROPIC_API_KEY || '';
-}
-
-interface ClaudeMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-interface ClaudeResponse {
-  content: Array<{ type: string; text: string }>;
-}
-
 export async function callClaude(
   systemPrompt: string,
   userMessage: string,
   options?: { language?: string }
 ): Promise<string> {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error('Anthropic API key not configured');
-  }
-
   const finalSystem = options?.language === 'es'
     ? `${systemPrompt}\n\nRespond entirely in Spanish.`
     : systemPrompt;
 
-  const response = await fetch(API_URL, {
+  const response = await fetch('/api/claude', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: finalSystem,
-      messages: [{ role: 'user', content: userMessage }] as ClaudeMessage[],
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system: finalSystem, userMessage }),
   });
 
   if (!response.ok) {
-    const errText = await response.text().catch(() => 'Unknown error');
-    throw new Error(`Claude API error: ${response.status} - ${errText}`);
+    const errData = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(errData.error || `API error: ${response.status}`);
   }
 
-  const data: ClaudeResponse = await response.json();
-  const text = data.content?.[0]?.text;
-  if (!text) throw new Error('Empty response from Claude API');
-  return text;
+  const data = await response.json();
+  if (!data.text) throw new Error('Empty response from Claude API');
+  return data.text;
 }
 
 // FEATURE 1: Job Translator

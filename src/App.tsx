@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import JobSearchPage from './pages/JobSearchPage';
 import JobDetailPage from './pages/JobDetailPage';
@@ -27,11 +28,11 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/jobs" element={<JobSearchPage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/my-jobs" element={<DashboardPage />} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+          <Route path="/my-jobs" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/employers" element={<EmployerLandingPage />} />
-          <Route path="/dashboard" element={<EmployerDashboard />} />
-          <Route path="/dashboard/post" element={<PostJobPage />} />
+          <Route path="/dashboard" element={<ProtectedRoute requiredRole="employer"><EmployerDashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/post" element={<ProtectedRoute requiredRole="employer"><PostJobPage /></ProtectedRoute>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/trades" element={<TradesLandingPage />} />

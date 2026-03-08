@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import SkillsCardDisplay from '../components/SkillsCardDisplay';
 import type { SkillsCardData } from '../components/SkillsCardDisplay';
+import { joinBenchWaitlist } from '../lib/queries';
+import toast from 'react-hot-toast';
 
 const MOCK_WORKERS: SkillsCardData[] = [
   {
@@ -91,12 +93,21 @@ export default function ContractorBenchPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
-    // In production: save to bench_waitlist table
-    console.log('Bench waitlist signup:', email);
-    setSubmitted(true);
+    if (!email || submitting) return;
+    setSubmitting(true);
+    try {
+      await joinBenchWaitlist(email);
+      setSubmitted(true);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -189,9 +200,10 @@ export default function ContractorBenchPage() {
                 />
                 <button
                   type="submit"
-                  className="bg-orange hover:bg-orange-dark text-white font-bold px-6 py-3 rounded-lg transition-colors cursor-pointer border-none shrink-0"
+                  disabled={submitting}
+                  className="bg-orange hover:bg-orange-dark text-white font-bold px-6 py-3 rounded-lg transition-colors cursor-pointer border-none shrink-0 disabled:opacity-50"
                 >
-                  Notify Me
+                  {submitting ? 'Saving...' : 'Notify Me'}
                 </button>
               </form>
             </>

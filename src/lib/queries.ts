@@ -267,6 +267,33 @@ export async function updateApplicationStatus(applicationId: string, status: str
   if (error) throw new Error(error.message);
 }
 
+// ---- Trades jobs ----
+
+export async function fetchTradesJobs(): Promise<Job[]> {
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('*, company:companies(*)')
+    .eq('status', 'active')
+    .not('trade_category', 'is', null)
+    .order('pay_max', { ascending: false, nullsFirst: false });
+
+  if (error) throw new Error(error.message);
+  return (data as Job[]) ?? [];
+}
+
+// ---- Bench waitlist ----
+
+export async function joinBenchWaitlist(email: string) {
+  const { error } = await supabase
+    .from('bench_waitlist')
+    .insert({ email });
+
+  if (error) {
+    if (error.code === '23505') throw new Error('You are already on the waitlist');
+    throw new Error(error.message);
+  }
+}
+
 // ---- Profile ----
 
 export async function updateProfile(userId: string, updates: Record<string, any>) {

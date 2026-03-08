@@ -149,7 +149,9 @@ export default function PostJobPage() {
         trade_category: isTrades ? (tradeCategory || null) : null,
         neighborhood: neighborhood || null,
         zip_code: zipCode || null,
-        requirements: requirements || null,
+        requirements: (isTrades && toolsRequired)
+          ? `${requirements || ''}\n\nTools Required: ${toolsRequired}`.trim()
+          : (requirements || null),
         is_degree_required: isDegreeRequired,
         is_spanish_friendly: isSpanishFriendly,
         is_urgently_hiring: isUrgent,

@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   HardHat, Zap, Flame, Wind, Droplets, Hammer, Truck,
   Cog, Sun, Home, Weight, Paintbrush, Blocks, Car, Shovel,
   GraduationCap, ExternalLink, Heart, ChevronRight,
 } from 'lucide-react';
+import { fetchTradesJobs } from '../lib/queries';
 import { sampleJobs } from '../data/sampleJobs';
 
 const TRADE_CATEGORIES = [
@@ -70,27 +72,18 @@ const APPRENTICESHIP_PROGRAMS = [
 ];
 
 export default function TradesLandingPage() {
+  const { data: liveJobs, error } = useQuery({
+    queryKey: ['tradesJobs'],
+    queryFn: fetchTradesJobs,
+    retry: false,
+  });
+
+  const tradesJobs = error ? sampleJobs.filter((j) => j.trade_category) : (liveJobs ?? sampleJobs.filter((j) => j.trade_category));
+
   const jobCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const cat of TRADE_CATEGORIES) {
-      counts[cat.slug] = sampleJobs.filter(
-        (j) => j.trade_category === cat.slug || j.trade_category === cat.slug.split('/')[0]
-      ).length;
-    }
-    // Also count Machining → CNC/Machining, etc.
-    for (const j of sampleJobs) {
-      if (!j.trade_category) continue;
-      const match = TRADE_CATEGORIES.find(
-        (c) => c.slug === j.trade_category || c.slug.includes(j.trade_category!)
-      );
-      if (match && !counts[match.slug]) counts[match.slug] = 1;
-      else if (match) {
-        // recount to be safe
-      }
-    }
-    // Accurate recount
-    for (const cat of TRADE_CATEGORIES) {
-      counts[cat.slug] = sampleJobs.filter((j) => {
+      counts[cat.slug] = tradesJobs.filter((j) => {
         if (!j.trade_category) return false;
         return j.trade_category === cat.slug
           || cat.slug.includes(j.trade_category)
@@ -98,12 +91,9 @@ export default function TradesLandingPage() {
       }).length;
     }
     return counts;
-  }, []);
+  }, [tradesJobs]);
 
-  const totalTradesJobs = useMemo(
-    () => sampleJobs.filter((j) => j.trade_category).length,
-    []
-  );
+  const totalTradesJobs = tradesJobs.length;
 
   return (
     <div>

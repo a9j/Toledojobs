@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft, DollarSign, Clock, MapPin, Shield, Award, ChevronDown,
-  HardHat, Flame, SlidersHorizontal,
+  HardHat, Flame, SlidersHorizontal, Loader2,
 } from 'lucide-react';
+import { fetchTradesJobs } from '../lib/queries';
 import { sampleJobs } from '../data/sampleJobs';
 import FoundingEmployerBadge from '../components/FoundingEmployerBadge';
 import type { Job } from '../types/database';
@@ -19,6 +21,14 @@ export default function TradeCategoryPage() {
   const { category } = useParams<{ category: string }>();
   const decodedCategory = decodeURIComponent(category || '');
 
+  const { data: liveJobs, isLoading, error } = useQuery({
+    queryKey: ['tradesJobs'],
+    queryFn: fetchTradesJobs,
+    retry: false,
+  });
+
+  const allTradesJobs = error ? sampleJobs.filter((j) => j.trade_category) : (liveJobs ?? sampleJobs.filter((j) => j.trade_category));
+
   // Filters
   const [prevailingWage, setPrevailingWage] = useState(false);
   const [perDiem, setPerDiem] = useState(false);
@@ -28,7 +38,7 @@ export default function TradeCategoryPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   const filteredJobs = useMemo(() => {
-    let jobs = sampleJobs.filter((j) => {
+    let jobs = allTradesJobs.filter((j) => {
       if (!j.trade_category) return false;
       return j.trade_category === decodedCategory
         || decodedCategory.includes(j.trade_category)
@@ -44,7 +54,7 @@ export default function TradeCategoryPage() {
     // Sort by pay high to low
     jobs.sort((a, b) => (b.pay_max || b.pay_min || 0) - (a.pay_max || a.pay_min || 0));
     return jobs;
-  }, [decodedCategory, prevailingWage, perDiem, overtime, unionFilter, experienceFilter]);
+  }, [allTradesJobs, decodedCategory, prevailingWage, perDiem, overtime, unionFilter, experienceFilter]);
 
   const activeFilterCount = [prevailingWage, perDiem, overtime, !!unionFilter, !!experienceFilter].filter(Boolean).length;
 
@@ -175,7 +185,9 @@ export default function TradeCategoryPage() {
         )}
 
         {/* Job Cards - trade-optimized layout */}
-        {filteredJobs.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-16"><Loader2 className="w-8 h-8 text-orange animate-spin" /></div>
+        ) : filteredJobs.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <HardHat className="w-16 h-16 mx-auto mb-4 opacity-30" />
             <p className="text-xl font-bold text-navy">No {decodedCategory.replace('/', ' / ')} jobs right now</p>

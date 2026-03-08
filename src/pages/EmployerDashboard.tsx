@@ -113,7 +113,7 @@ export default function EmployerDashboard() {
           { label: 'Active Listings', value: activeJobs, icon: <Briefcase className="w-5 h-5 text-orange" /> },
           { label: 'Total Views', value: totalViews, icon: <Eye className="w-5 h-5 text-blue-500" /> },
           { label: 'Applications', value: totalApps, icon: <FileText className="w-5 h-5 text-purple-500" /> },
-          { label: 'Avg Response', value: '< 24h', icon: <Clock className="w-5 h-5 text-green-500" /> },
+          { label: 'Total Jobs', value: jobs.length, icon: <Clock className="w-5 h-5 text-green-500" /> },
         ].map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-4">
             <div className="flex items-center gap-2 mb-2">
