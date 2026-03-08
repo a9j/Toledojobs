@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react';
 import { GraduationCap, Loader2 } from 'lucide-react';
 import { getTrainingRecommendations } from '../lib/claude';
 import AiBadge from './AiBadge';
-import toast from 'react-hot-toast';
-import type { Job, Profile } from '../types/database';
+import type { Job } from '../types/database';
 
 interface TrainingPathCardProps {
   job: Job;
-  profile: Profile | null;
   profileSummary: string;
   language?: string;
 }
@@ -27,7 +25,7 @@ function buildJobSummary(job: Job): string {
   return parts.filter(Boolean).join('\n');
 }
 
-export default function TrainingPathCard({ job, profile, profileSummary, language }: TrainingPathCardProps) {
+export default function TrainingPathCard({ job, profileSummary, language }: TrainingPathCardProps) {
   const [recommendations, setRecommendations] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

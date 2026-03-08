@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import {
-  Users, Zap, Clock, Star, Check, Building2, ArrowRight, Briefcase
+  Users, Zap, Star, Check, Building2, ArrowRight, Briefcase
 } from 'lucide-react';
 
 const PRICING_TIERS = [

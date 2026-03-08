@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  HardHat, Zap, Flame, Wrench, Wind, Droplets, Hammer, Truck,
+  HardHat, Zap, Flame, Wind, Droplets, Hammer, Truck,
   Cog, Sun, Home, Weight, Paintbrush, Blocks, Car, Shovel,
   GraduationCap, ExternalLink, Heart, ChevronRight,
 } from 'lucide-react';

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowLeft, Search, SlidersHorizontal, Mail, HardHat, Heart, CheckCircle,
+  ArrowLeft, Search, SlidersHorizontal, Mail, Heart, CheckCircle,
 } from 'lucide-react';
 import SkillsCardDisplay from '../components/SkillsCardDisplay';
 import type { SkillsCardData } from '../components/SkillsCardDisplay';

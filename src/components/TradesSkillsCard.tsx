@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Wrench, Shield, HardHat, Truck, Clock, Car } from 'lucide-react';
 import SkillsCardDisplay from './SkillsCardDisplay';
 

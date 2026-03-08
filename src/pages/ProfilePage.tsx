@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  User, Phone, MapPin, Globe, Briefcase, Clock, Car, GraduationCap,
-  Bookmark, FileText, Loader2, Check, ChevronRight
+  User, Globe, Briefcase, Car, GraduationCap,
+  Bookmark, FileText, Loader2, Check
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { updateProfile, fetchSavedJobsFull, fetchMyApplications, fetchSavedJobs, saveJob, unsaveJob } from '../lib/queries';

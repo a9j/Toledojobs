@@ -3,11 +3,10 @@ import { X, Loader2, RefreshCw, Briefcase } from 'lucide-react';
 import { generateCandidateSummary } from '../lib/claude';
 import AiBadge from './AiBadge';
 import toast from 'react-hot-toast';
-import type { Job, Profile } from '../types/database';
+import type { Job } from '../types/database';
 
 interface ApplySummaryModalProps {
   job: Job;
-  profile: Profile | null;
   profileSummary: string;
   onSubmit: (summary: string) => void;
   onClose: () => void;
@@ -31,7 +30,7 @@ function buildJobSummary(job: Job): string {
 }
 
 export default function ApplySummaryModal({
-  job, profile, profileSummary, onSubmit, onClose, isSubmitting, language,
+  job, profileSummary, onSubmit, onClose, isSubmitting, language,
 }: ApplySummaryModalProps) {
   const [summary, setSummary] = useState('');
   const [generating, setGenerating] = useState(true);

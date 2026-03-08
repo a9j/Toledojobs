@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Navigate, Link, useNavigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import {
   Building2, Plus, Briefcase, Users, Loader2, Trash2, Edit3,
-  Eye, FileText, Clock, ChevronDown, ChevronUp, Copy, X,
-  BarChart3, Mail, Phone, User, Star, HardHat
+  Eye, FileText, Clock, ChevronDown, Copy, X,
+  Mail, Phone, User, Star
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import {
@@ -20,7 +20,6 @@ import toast from 'react-hot-toast';
 export default function EmployerDashboard() {
   const { user, profile, loading } = useAuth();
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'jobs' | 'company'>('jobs');
   const [viewingAppsForJob, setViewingAppsForJob] = useState<Job | null>(null);
 

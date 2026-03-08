@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  ArrowLeft, MapPin, Clock, DollarSign, Bookmark, Flame, Shield, Calendar,
-  Briefcase, CheckCircle, Loader2, AlertCircle, Award, HardHat, Wrench,
+  ArrowLeft, MapPin, Clock, Bookmark, Flame, Shield, Calendar,
+  Briefcase, CheckCircle, Loader2, AlertCircle, Award, HardHat,
   Heart, Zap, Building2
 } from 'lucide-react';
 import { fetchJobById, fetchSavedJobs, saveJob, unsaveJob, applyToJob, fetchMyApplications } from '../lib/queries';
@@ -62,7 +62,7 @@ export default function JobDetailPage() {
 
   const language = profile?.preferred_language === 'es' ? 'es' : undefined;
 
-  const { data: fetchedJob, isLoading, error } = useQuery({
+  const { data: fetchedJob, isLoading } = useQuery({
     queryKey: ['job', id],
     queryFn: () => fetchJobById(id!),
     enabled: !!id,
@@ -262,7 +262,6 @@ export default function JobDetailPage() {
         {user && (job.requirements || job.certifications_required.length > 0 || job.is_degree_required) && (
           <TrainingPathCard
             job={job}
-            profile={profile}
             profileSummary={profileSummary}
             language={language}
           />
@@ -364,7 +363,6 @@ export default function JobDetailPage() {
       {showApplyModal && (
         <ApplySummaryModal
           job={job}
-          profile={profile}
           profileSummary={profileSummary}
           onSubmit={(summary) => applyMutation.mutate(summary)}
           onClose={() => setShowApplyModal(false)}
