@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, MapPin, SlidersHorizontal, X, ChevronDown, Briefcase } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, X, Briefcase } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchJobs, fetchSavedJobs, saveJob, unsaveJob } from '../lib/queries';
 import { useAuth } from '../lib/auth';

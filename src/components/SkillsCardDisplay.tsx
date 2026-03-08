@@ -1,5 +1,5 @@
 import {
-  HardHat, Award, Wrench, Shield, Clock, Truck, Car, CheckCircle, User,
+  HardHat, Award, Wrench, Shield, Truck, Car, CheckCircle, User,
 } from 'lucide-react';
 
 export interface SkillsCardData {

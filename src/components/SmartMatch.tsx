@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, DollarSign, MapPin, Flame } from 'lucide-react';
+import { DollarSign, MapPin, Flame } from 'lucide-react';
 import { getSmartMatches } from '../lib/claude';
 import type { MatchResult } from '../lib/claude';
 import type { Job, Profile, SeekerProfile, SkillsCard } from '../types/database';

@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, DollarSign, Clock, MapPin, Shield, Award, ChevronDown,
-  HardHat, Flame, Bookmark, SlidersHorizontal, X,
+  HardHat, Flame, SlidersHorizontal,
 } from 'lucide-react';
 import { sampleJobs } from '../data/sampleJobs';
 import FoundingEmployerBadge from '../components/FoundingEmployerBadge';
