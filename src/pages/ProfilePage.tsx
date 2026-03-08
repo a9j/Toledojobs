@@ -442,7 +442,7 @@ export default function ProfilePage() {
 
           {/* Trades Skills Card */}
           {showTradesCard && (
-            <TradesSkillsCard data={tradesData} onChange={setTradesData} />
+            <TradesSkillsCard data={tradesData} onChange={setTradesData} userName={fullName} />
           )}
 
           {/* Save Button */}

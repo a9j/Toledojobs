@@ -1,15 +1,21 @@
-import { useState, useEffect } from 'react';
-import { Wrench, Shield, HardHat, Truck, Clock, Award } from 'lucide-react';
+import { useState } from 'react';
+import { Wrench, Shield, HardHat, Truck, Clock, Car } from 'lucide-react';
+import SkillsCardDisplay from './SkillsCardDisplay';
 
 const TRADE_OPTIONS = [
-  'Electrical', 'Plumbing', 'HVAC', 'Welding', 'Carpentry', 'Machining',
-  'Pipefitting', 'Ironwork', 'Masonry', 'Painting', 'Roofing', 'General Labor',
+  'Welding', 'Electrical', 'HVAC', 'Plumbing', 'Carpentry',
+  'CDL/Driving', 'CNC/Machining', 'Solar/Energy', 'Roofing',
+  'Heavy Equipment', 'Painting', 'Concrete/Masonry', 'Auto/Diesel Mechanic',
+  'General Labor',
 ];
 
 const CERTIFICATION_OPTIONS = [
-  'OSHA 10', 'OSHA 30', 'EPA 608', 'AWS D1.1', 'CPR/First Aid',
-  'Forklift', 'Confined Space', 'Fall Protection', 'Rigging & Signaling',
-  'Journeyman License', 'Master License', 'CDL', 'Backflow Prevention',
+  'OSHA 10', 'OSHA 30', 'CDL-A', 'CDL-B', 'EPA 608',
+  'MIG Welding', 'TIG Welding', 'Stick Welding', 'Flux Core Welding',
+  'Journeyman Electrician', 'Master Electrician',
+  'Journeyman Plumber', 'Master Plumber',
+  'HVAC Certified', 'Forklift Certified', 'First Aid/CPR',
+  'Confined Space', 'Fall Protection', 'Scaffolding', 'Rigging/Signal',
 ];
 
 const EXPERIENCE_LEVELS = [
@@ -28,15 +34,18 @@ export interface TradesSkillsData {
   unionStatus: string;
   availableNow: boolean;
   willingToTravel: boolean;
+  availabilityNotes?: string;
+  reliableTransport?: boolean;
 }
 
 interface TradesSkillsCardProps {
   data: TradesSkillsData;
   onChange: (data: TradesSkillsData) => void;
   viewMode?: boolean;
+  userName?: string;
 }
 
-export default function TradesSkillsCard({ data, onChange, viewMode = false }: TradesSkillsCardProps) {
+export default function TradesSkillsCard({ data, onChange, viewMode = false, userName = '' }: TradesSkillsCardProps) {
   function update(partial: Partial<TradesSkillsData>) {
     onChange({ ...data, ...partial });
   }
@@ -50,67 +59,21 @@ export default function TradesSkillsCard({ data, onChange, viewMode = false }: T
 
   if (viewMode) {
     return (
-      <div className="bg-gradient-to-br from-navy to-navy-light rounded-xl p-5 text-white">
-        <div className="flex items-center gap-2 mb-4">
-          <HardHat className="w-5 h-5 text-orange" />
-          <h3 className="text-lg font-bold">Trades Skills Card</h3>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div>
-            <p className="text-xs text-white/50 uppercase tracking-wide">Trade</p>
-            <p className="font-semibold">{data.primaryTrade || 'Not set'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-white/50 uppercase tracking-wide">Level</p>
-            <p className="font-semibold capitalize">{data.experienceLevel || 'Not set'}</p>
-          </div>
-          <div>
-            <p className="text-xs text-white/50 uppercase tracking-wide">Years</p>
-            <p className="font-semibold">{data.yearsInTrade || 0}</p>
-          </div>
-          <div>
-            <p className="text-xs text-white/50 uppercase tracking-wide">Union</p>
-            <p className="font-semibold capitalize">{data.unionStatus.replace(/_/g, ' ') || 'N/A'}</p>
-          </div>
-        </div>
-
-        {data.certifications.length > 0 && (
-          <div className="mb-4">
-            <p className="text-xs text-white/50 uppercase tracking-wide mb-1.5">Certifications</p>
-            <div className="flex flex-wrap gap-1.5">
-              {data.certifications.map((cert) => (
-                <span key={cert} className="text-xs bg-white/15 text-white px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <Award className="w-3 h-3" /> {cert}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-wrap gap-2">
-          {data.ownTools && (
-            <span className="text-xs bg-orange/20 text-orange px-2.5 py-1 rounded-full flex items-center gap-1">
-              <Wrench className="w-3 h-3" /> Own Tools
-            </span>
-          )}
-          {data.ownPPE && (
-            <span className="text-xs bg-orange/20 text-orange px-2.5 py-1 rounded-full flex items-center gap-1">
-              <Shield className="w-3 h-3" /> Own PPE
-            </span>
-          )}
-          {data.availableNow && (
-            <span className="text-xs bg-green-500/20 text-green-400 px-2.5 py-1 rounded-full flex items-center gap-1">
-              <Clock className="w-3 h-3" /> Available Now
-            </span>
-          )}
-          {data.willingToTravel && (
-            <span className="text-xs bg-blue-500/20 text-blue-400 px-2.5 py-1 rounded-full flex items-center gap-1">
-              <Truck className="w-3 h-3" /> Will Travel
-            </span>
-          )}
-        </div>
-      </div>
+      <SkillsCardDisplay
+        data={{
+          name: userName,
+          primaryTrade: data.primaryTrade,
+          experienceLevel: data.experienceLevel,
+          yearsInTrade: data.yearsInTrade,
+          certifications: data.certifications,
+          ownTools: data.ownTools,
+          ownPPE: data.ownPPE,
+          reliableTransport: data.reliableTransport ?? false,
+          unionStatus: data.unionStatus,
+          availableNow: data.availableNow,
+          willingToTravel: data.willingToTravel,
+        }}
+      />
     );
   }
 
@@ -214,6 +177,7 @@ export default function TradesSkillsCard({ data, onChange, viewMode = false }: T
           { label: 'Own PPE', key: 'ownPPE' as const, icon: <Shield className="w-3.5 h-3.5" /> },
           { label: 'Available Now', key: 'availableNow' as const, icon: <Clock className="w-3.5 h-3.5" /> },
           { label: 'Will Travel', key: 'willingToTravel' as const, icon: <Truck className="w-3.5 h-3.5" /> },
+          { label: 'Reliable Transport', key: 'reliableTransport' as const, icon: <Car className="w-3.5 h-3.5" /> },
         ].map((toggle) => (
           <label
             key={toggle.key}
@@ -225,7 +189,7 @@ export default function TradesSkillsCard({ data, onChange, viewMode = false }: T
           >
             <input
               type="checkbox"
-              checked={data[toggle.key]}
+              checked={data[toggle.key] || false}
               onChange={(e) => update({ [toggle.key]: e.target.checked })}
               className="sr-only"
             />
@@ -235,11 +199,37 @@ export default function TradesSkillsCard({ data, onChange, viewMode = false }: T
         ))}
       </div>
 
+      {/* Availability Notes */}
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-navy mb-1">Availability Notes (optional)</label>
+        <textarea
+          value={data.availabilityNotes || ''}
+          onChange={(e) => update({ availabilityNotes: e.target.value })}
+          rows={2}
+          placeholder="e.g., Available after current project ends April 15, prefer day shifts..."
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-navy outline-none focus:border-orange text-sm resize-none"
+        />
+      </div>
+
       {/* Preview */}
       {data.primaryTrade && (
         <div className="mt-5">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Preview</p>
-          <TradesSkillsCard data={data} onChange={() => {}} viewMode />
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Your Skills Card Preview</p>
+          <SkillsCardDisplay
+            data={{
+              name: userName || 'Your Name',
+              primaryTrade: data.primaryTrade,
+              experienceLevel: data.experienceLevel,
+              yearsInTrade: data.yearsInTrade,
+              certifications: data.certifications,
+              ownTools: data.ownTools,
+              ownPPE: data.ownPPE,
+              reliableTransport: data.reliableTransport ?? false,
+              unionStatus: data.unionStatus,
+              availableNow: data.availableNow,
+              willingToTravel: data.willingToTravel,
+            }}
+          />
         </div>
       )}
     </div>
