@@ -5,8 +5,9 @@ import {
   Briefcase, Bookmark, User, Settings, Loader2, MapPin, Clock, DollarSign
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import { fetchMyApplications, fetchSavedJobsFull, updateProfile } from '../lib/queries';
+import { fetchMyApplications, fetchSavedJobsFull, updateProfile, fetchJobs } from '../lib/queries';
 import JobCard from '../components/JobCard';
+import SmartMatch from '../components/SmartMatch';
 import { saveJob, unsaveJob, fetchSavedJobs } from '../lib/queries';
 import toast from 'react-hot-toast';
 
@@ -73,8 +74,17 @@ export default function DashboardPage() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  // Fetch recent jobs for Smart Match
+  const { data: recentJobs = [] } = useQuery({
+    queryKey: ['jobs', {}],
+    queryFn: () => fetchJobs({}),
+    retry: false,
+  });
+
   if (loading) return <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 text-orange animate-spin" /></div>;
   if (!user) return <Navigate to="/" replace />;
+
+  const language = profile?.preferred_language === 'es' ? 'es' : undefined;
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'applications', label: 'My Applications', icon: <Briefcase className="w-4 h-4" /> },
@@ -87,6 +97,13 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold text-navy mb-6">
         Welcome{profile?.full_name ? `, ${profile.full_name}` : ''}
       </h1>
+
+      {/* FEATURE 2: Smart Match */}
+      <SmartMatch
+        profile={profile}
+        jobs={recentJobs}
+        language={language}
+      />
 
       <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-8">
         {tabs.map((t) => (

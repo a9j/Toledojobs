@@ -9,6 +9,9 @@ import {
 import { fetchJobById, fetchSavedJobs, saveJob, unsaveJob, applyToJob, fetchMyApplications } from '../lib/queries';
 import { useAuth } from '../lib/auth';
 import { getSampleJobById } from '../data/sampleJobs';
+import JobTranslator from '../components/JobTranslator';
+import ApplySummaryModal from '../components/ApplySummaryModal';
+import TrainingPathCard from '../components/TrainingPathCard';
 import toast from 'react-hot-toast';
 
 function formatPay(job: any): string {
@@ -43,12 +46,21 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(diffDays / 7)}w ago`;
 }
 
+function buildProfileSummary(profile: any): string {
+  const parts: string[] = [];
+  if (profile?.full_name) parts.push(`Name: ${profile.full_name}`);
+  if (profile?.zip_code) parts.push(`Location: ${profile.zip_code}`);
+  if (profile?.role) parts.push(`Role: ${profile.role}`);
+  return parts.length > 0 ? parts.join('\n') : 'Job seeker in Toledo, OH area';
+}
+
 export default function JobDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const queryClient = useQueryClient();
-  const [summary, setSummary] = useState('');
-  const [showApplyForm, setShowApplyForm] = useState(false);
+  const [showApplyModal, setShowApplyModal] = useState(false);
+
+  const language = profile?.preferred_language === 'es' ? 'es' : undefined;
 
   const { data: fetchedJob, isLoading, error } = useQuery({
     queryKey: ['job', id],
@@ -57,7 +69,6 @@ export default function JobDetailPage() {
     retry: false,
   });
 
-  // Fallback to sample data
   const job = fetchedJob || (id ? getSampleJobById(id) : undefined);
   const usingSample = !fetchedJob && !!job;
 
@@ -86,14 +97,14 @@ export default function JobDetailPage() {
   });
 
   const applyMutation = useMutation({
-    mutationFn: () => {
+    mutationFn: (summary: string) => {
       if (!user || !id) throw new Error('Must be signed in');
       return applyToJob(user.id, id, summary);
     },
     onSuccess: () => {
       toast.success('Application submitted!');
       queryClient.invalidateQueries({ queryKey: ['myApplications'] });
-      setShowApplyForm(false);
+      setShowApplyModal(false);
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -117,6 +128,7 @@ export default function JobDetailPage() {
   }
 
   const isTrades = !!job.trade_category;
+  const profileSummary = buildProfileSummary(profile);
 
   const detailsGrid = [
     { label: 'Job Type', value: formatJobType(job.job_type), icon: <Briefcase className="w-4 h-4" /> },
@@ -128,6 +140,11 @@ export default function JobDetailPage() {
     { label: 'Union', value: job.union_status === 'union' ? 'Union' : job.union_status === 'non_union' ? 'Non-Union' : 'Either', icon: <Shield className="w-4 h-4" /> },
     { label: 'Degree', value: job.is_degree_required ? 'Required' : 'Not Required', icon: <Award className="w-4 h-4" /> },
   ];
+
+  function handleQuickApply() {
+    if (!user) { toast.error('Sign in to apply'); return; }
+    setShowApplyModal(true);
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 pb-24 md:pb-8">
@@ -158,8 +175,6 @@ export default function JobDetailPage() {
                 </span>
               )}
             </div>
-
-            {/* Pay - Large */}
             <div className="mt-3">
               <span className="text-2xl md:text-3xl font-extrabold text-orange">
                 {formatPay(job)}
@@ -177,7 +192,6 @@ export default function JobDetailPage() {
           </button>
         </div>
 
-        {/* Posted Time */}
         <p className="text-xs text-gray-400 mt-2">Posted {timeAgo(job.created_at)}</p>
 
         {/* Status Badges */}
@@ -210,11 +224,8 @@ export default function JobDetailPage() {
 
         <hr className="my-6 border-gray-100" />
 
-        {/* Description */}
-        <div>
-          <h2 className="text-lg font-bold text-navy mb-3">About this role</h2>
-          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{job.description}</p>
-        </div>
+        {/* FEATURE 1: Job Translator — replaces the plain description */}
+        <JobTranslator description={job.description} language={language} />
 
         {job.spanish_description && (
           <div className="mt-6 bg-blue-50 rounded-lg p-4">
@@ -245,6 +256,16 @@ export default function JobDetailPage() {
               ))}
             </div>
           </div>
+        )}
+
+        {/* FEATURE 4: Training Path Recommender — shows below requirements when logged in */}
+        {user && (job.requirements || job.certifications_required.length > 0 || job.is_degree_required) && (
+          <TrainingPathCard
+            job={job}
+            profile={profile}
+            profileSummary={profileSummary}
+            language={language}
+          />
         )}
 
         {/* Trades Section */}
@@ -310,43 +331,9 @@ export default function JobDetailPage() {
               <CheckCircle className="w-5 h-5" />
               <span className="font-medium">You've applied to this job</span>
             </div>
-          ) : showApplyForm ? (
-            <div className="bg-gray-50 rounded-xl p-5">
-              <h3 className="text-lg font-bold text-navy mb-3 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-orange" /> Quick Apply
-              </h3>
-              <label className="block text-sm font-medium text-navy mb-1">
-                Brief summary about yourself (optional)
-              </label>
-              <textarea
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                rows={4}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-navy outline-none focus:border-orange transition-colors resize-none"
-                placeholder="Tell the employer a bit about your experience..."
-              />
-              <div className="flex gap-3 mt-4">
-                <button
-                  onClick={() => applyMutation.mutate()}
-                  disabled={applyMutation.isPending}
-                  className="bg-orange hover:bg-orange-dark text-white px-6 py-2.5 rounded-lg font-semibold transition-colors cursor-pointer border-none disabled:opacity-50"
-                >
-                  {applyMutation.isPending ? 'Submitting...' : 'Submit Application'}
-                </button>
-                <button
-                  onClick={() => setShowApplyForm(false)}
-                  className="text-gray-500 hover:text-navy px-4 py-2.5 rounded-lg font-medium transition-colors cursor-pointer border border-gray-300 bg-white"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
           ) : (
             <button
-              onClick={() => {
-                if (!user) { toast.error('Sign in to apply'); return; }
-                setShowApplyForm(true);
-              }}
+              onClick={handleQuickApply}
               className="w-full bg-orange hover:bg-orange-dark text-white py-3 rounded-lg font-semibold text-lg transition-colors cursor-pointer border-none"
             >
               Quick Apply
@@ -364,40 +351,26 @@ export default function JobDetailPage() {
           </div>
         ) : (
           <button
-            onClick={() => {
-              if (!user) { toast.error('Sign in to apply'); return; }
-              if (showApplyForm) {
-                applyMutation.mutate();
-              } else {
-                setShowApplyForm(true);
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-              }
-            }}
+            onClick={handleQuickApply}
             disabled={applyMutation.isPending}
             className="w-full bg-orange hover:bg-orange-dark text-white py-3.5 rounded-xl font-semibold text-lg transition-colors cursor-pointer border-none disabled:opacity-50"
           >
-            {applyMutation.isPending ? 'Submitting...' : 'Quick Apply'}
+            Quick Apply
           </button>
         )}
       </div>
 
-      {/* Mobile Apply Form (shown below main content when toggled) */}
-      {showApplyForm && !alreadyApplied && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5 mt-4 md:hidden">
-          <h3 className="text-lg font-bold text-navy mb-3 flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-orange" /> Quick Apply
-          </h3>
-          <label className="block text-sm font-medium text-navy mb-1">
-            Brief summary (optional)
-          </label>
-          <textarea
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-            rows={3}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-navy outline-none focus:border-orange transition-colors resize-none"
-            placeholder="Tell them about your experience..."
-          />
-        </div>
+      {/* FEATURE 3: Apply Summary Modal */}
+      {showApplyModal && (
+        <ApplySummaryModal
+          job={job}
+          profile={profile}
+          profileSummary={profileSummary}
+          onSubmit={(summary) => applyMutation.mutate(summary)}
+          onClose={() => setShowApplyModal(false)}
+          isSubmitting={applyMutation.isPending}
+          language={language}
+        />
       )}
     </div>
   );
