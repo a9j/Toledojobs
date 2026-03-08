@@ -1,4 +1,4 @@
-import { Briefcase, Menu, X, User, LogOut, Building2, Search, Plus } from 'lucide-react';
+import { Briefcase, Menu, X, User, LogOut, Building2, Search, Plus, HardHat } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
@@ -46,8 +46,8 @@ export default function Header() {
             </Link>
           )}
 
-          <Link to="/jobs?category=trades" className="hover:text-orange transition-colors no-underline text-white">
-            Trades
+          <Link to="/trades" className="hover:text-orange transition-colors no-underline text-white font-bold flex items-center gap-1">
+            <HardHat className="w-4 h-4 text-orange" /> Trades
           </Link>
 
           {user ? (
@@ -118,8 +118,8 @@ export default function Header() {
             </Link>
           )}
 
-          <Link to="/jobs?category=trades" className="py-2 hover:text-orange transition-colors no-underline text-white" onClick={() => setMenuOpen(false)}>
-            Trades
+          <Link to="/trades" className="py-2 hover:text-orange transition-colors no-underline text-white font-bold flex items-center gap-2" onClick={() => setMenuOpen(false)}>
+            <HardHat className="w-4 h-4 text-orange" /> Trades
           </Link>
 
           {user ? (

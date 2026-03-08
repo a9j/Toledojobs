@@ -1,4 +1,5 @@
-import { Zap } from 'lucide-react';
+import { Zap, HardHat, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import FilterChips from '../components/FilterChips';
 import JobFeed from '../components/JobFeed';
@@ -36,6 +37,29 @@ export default function HomePage() {
             <FilterChips />
           </div>
         </div>
+      </section>
+
+      {/* Trades Banner */}
+      <section className="bg-gradient-to-r from-[#0f1a2e] to-navy">
+        <Link
+          to="/trades"
+          className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between no-underline group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-orange/15 flex items-center justify-center">
+              <HardHat className="w-5 h-5 text-orange" />
+            </div>
+            <div>
+              <p className="text-white font-bold text-sm md:text-base">
+                Skilled trades? We built a section just for you.
+              </p>
+              <p className="text-white/40 text-xs md:text-sm">
+                Welding, electrical, HVAC, plumbing &mdash; pay-first listings sorted by rate.
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-orange group-hover:translate-x-1 transition-transform shrink-0" />
+        </Link>
       </section>
 
       {/* Job Feed */}

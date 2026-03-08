@@ -116,9 +116,13 @@ export default function JobCard({ job, isSaved, onToggleSave }: JobCardProps) {
           </span>
         )}
         {job.trade_category && (
-          <span className="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">
-            {job.trade_category}
-          </span>
+          <Link
+            to={`/trades/${encodeURIComponent(job.trade_category)}`}
+            className="text-xs bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full no-underline hover:bg-amber-100 transition-colors inline-flex items-center gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
+            Trades &middot; {job.trade_category}
+          </Link>
         )}
       </div>
 

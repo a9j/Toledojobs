@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -11,8 +11,14 @@ import EmployerLandingPage from './pages/EmployerLandingPage';
 import PostJobPage from './pages/PostJobPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import TradesLandingPage from './pages/TradesLandingPage';
+import TradeCategoryPage from './pages/TradeCategoryPage';
+import ContractorBenchPage from './pages/ContractorBenchPage';
 
 export default function App() {
+  const location = useLocation();
+  const isTradesSection = location.pathname.startsWith('/trades');
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -28,9 +34,12 @@ export default function App() {
           <Route path="/dashboard/post" element={<PostJobPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/trades" element={<TradesLandingPage />} />
+          <Route path="/trades/bench" element={<ContractorBenchPage />} />
+          <Route path="/trades/:category" element={<TradeCategoryPage />} />
         </Routes>
       </main>
-      <Footer />
+      {!isTradesSection && <Footer />}
     </div>
   );
 }
