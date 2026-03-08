@@ -2,9 +2,15 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
+import JobSearchPage from './pages/JobSearchPage';
 import JobDetailPage from './pages/JobDetailPage';
+import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import EmployerDashboard from './pages/EmployerDashboard';
+import EmployerLandingPage from './pages/EmployerLandingPage';
+import PostJobPage from './pages/PostJobPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
 export default function App() {
   return (
@@ -13,9 +19,15 @@ export default function App() {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/jobs" element={<JobSearchPage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/employer" element={<EmployerDashboard />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/my-jobs" element={<DashboardPage />} />
+          <Route path="/employers" element={<EmployerLandingPage />} />
+          <Route path="/dashboard" element={<EmployerDashboard />} />
+          <Route path="/dashboard/post" element={<PostJobPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
       </main>
       <Footer />

@@ -1,6 +1,7 @@
 import { MapPin, Clock, DollarSign, Bookmark, Flame } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { Job } from '../types/database';
+import FoundingEmployerBadge from './FoundingEmployerBadge';
 
 function formatPay(job: Job): string {
   if (!job.pay_min && !job.pay_max) return 'Pay not listed';
@@ -65,8 +66,9 @@ export default function JobCard({ job, isSaved, onToggleSave }: JobCardProps) {
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1.5">
             {job.company?.company_name || 'Company'}
+            {job.company?.is_founding_employer && <FoundingEmployerBadge />}
           </p>
         </div>
         <button
